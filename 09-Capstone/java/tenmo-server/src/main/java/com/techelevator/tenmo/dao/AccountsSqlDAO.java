@@ -18,8 +18,8 @@ public class AccountsSqlDAO implements AccountsDAO{
     }
     
     @Override
-    public BigDecimal getBalance(int accountId) {
-        return jdbcTemplate.queryForObject("select balance from accounts where account_id = ?;", BigDecimal.class, accountId);
+    public BigDecimal getBalance(int userId) {
+        return jdbcTemplate.queryForObject("select balance from accounts where user_id = ?;", BigDecimal.class, userId);
     }
     
     @Override
