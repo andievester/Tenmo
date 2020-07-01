@@ -1,7 +1,8 @@
 package com.techelevator.tenmo;
 
 import java.math.BigDecimal;
-
+import java.util.List;
+import java.util.Scanner;
 import org.springframework.web.client.RestTemplate;
 import com.techelevator.tenmo.models.Accounts;
 import com.techelevator.tenmo.models.AuthenticatedUser;
@@ -10,6 +11,8 @@ import com.techelevator.tenmo.models.UserCredentials;
 import com.techelevator.tenmo.services.AccountsService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
+import com.techelevator.tenmo.services.TransferService;
+import com.techelevator.tenmo.services.UserService;
 import com.techelevator.view.ConsoleService;
 
 public class App {
@@ -32,16 +35,20 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private ConsoleService console;
     private AuthenticationService authenticationService;
     private AccountsService accountsService;
+    private UserService userService;
+    private TransferService transferService;
 
     public static void main(String[] args) {
-    	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL), new AccountsService(API_BASE_URL));
+    	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL), new AccountsService(API_BASE_URL), new UserService(API_BASE_URL), new TransferService(API_BASE_URL));
     	app.run();
     }
 
-    public App(ConsoleService console, AuthenticationService authenticationService, AccountsService accountsService) {
+    public App(ConsoleService console, AuthenticationService authenticationService, AccountsService accountsService, UserService userService, TransferService transferService) {
 		this.console = console;
 		this.authenticationService = authenticationService;
 		this.accountsService = accountsService;
+		this.userService = userService;
+		this.transferService = transferService;
 	}
 
 	public void run() {
@@ -91,7 +98,31 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void sendBucks() {
-		// TODO Auto-generated method stub
+        Scanner scanner = new Scanner(System.in);
+		User[] userList = userService.list(currentUser.getToken());
+		for(User u : userList) {
+			System.out.println("user id: " + u.getId() + "    username: " + u.getUsername());
+		}
+		int userIdToTransferTo = -1;
+		System.out.println("Please choose a user id to transfer money to.");
+		while(userIdToTransferTo == -1) {
+			try {
+				userIdToTransferTo = Integer.parseInt(scanner.nextLine());
+			} catch (Exception e) {
+				System.out.println("Cannot parse input to an integer. Please try again.");
+			}
+		}
+		BigDecimal moneyToTransfer = BigDecimal.ZERO;
+		System.out.println("How much money do you want to transfer?");
+		while(moneyToTransfer == BigDecimal.ZERO) {
+			try {
+				moneyToTransfer = BigDecimal.valueOf(Double.parseDouble(scanner.nextLine()));
+			} catch (Exception e) {
+				System.out.println("Cannot parse input to a BigDecimal. Please try again.");
+			}
+		}
+		String CSV = currentUser.getUser().getId() + "," + userIdToTransferTo + "," + moneyToTransfer;
+		transferService.doTransfer(CSV);
 		
 	}
 

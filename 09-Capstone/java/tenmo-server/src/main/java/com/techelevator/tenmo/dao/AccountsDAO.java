@@ -10,4 +10,6 @@ public interface AccountsDAO {
 		BigDecimal getBalance(int accountId);
 		
 		List<Accounts> list();
+		
+		void updateBalance(Accounts account);
 }
