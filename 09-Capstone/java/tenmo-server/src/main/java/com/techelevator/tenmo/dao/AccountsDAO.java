@@ -7,7 +7,7 @@ import com.techelevator.tenmo.model.Accounts;
 
 public interface AccountsDAO {
 
-		BigDecimal getBalance(int userId);
+		BigDecimal getBalance(int accountId);
 		
-		Accounts[] list();
+		List<Accounts> list();
 }
