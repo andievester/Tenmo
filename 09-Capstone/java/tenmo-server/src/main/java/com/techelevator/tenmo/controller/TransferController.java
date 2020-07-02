@@ -16,6 +16,7 @@ import com.techelevator.tenmo.dao.AccountsDAO;
 import com.techelevator.tenmo.dao.TransferDAO;
 import com.techelevator.tenmo.dao.UserDAO;
 import com.techelevator.tenmo.dao.UserSqlDAO;
+import com.techelevator.tenmo.model.Accounts;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 
@@ -35,19 +36,20 @@ public class TransferController {
 		this.transferDAO = transferDAO;
 	}
 	
-	//post handler body of post is a transfer
-	//insert into database and fill out the rest of the info
-	//pass back the transfer object with added info
-	
 	@ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(path = "", method = RequestMethod.POST)
     public Transfer sendTransfer(@Valid @RequestBody Transfer transfer){
 		transfer.setTransfer_status_id(2);
 		transfer.setTransfer_type(2);
-		Transfer updatedTransfer = transferDAO.insertTransfer(transfer);
-		//if i was able to do the transfer:
-		//do a method to add money to account
-		//do a method to subtract money from account
+		Accounts account = accountDAO.getAccountUsingUserId(transfer.getAccount_from());
+		int compare = account.getBalance().compareTo(transfer.getAmount());
+		Transfer updatedTransfer = null;
+		if(compare == 0 || compare == 1) {
+			updatedTransfer = transferDAO.insertTransfer(transfer);
+		}
+		if(updatedTransfer != null) {
+			accountDAO.updateBalances(updatedTransfer);
+		}
         return updatedTransfer;
     }
 }

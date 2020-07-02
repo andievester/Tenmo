@@ -6,6 +6,7 @@ import java.util.Scanner;
 import org.springframework.web.client.RestTemplate;
 import com.techelevator.tenmo.models.Accounts;
 import com.techelevator.tenmo.models.AuthenticatedUser;
+import com.techelevator.tenmo.models.Transfer;
 import com.techelevator.tenmo.models.User;
 import com.techelevator.tenmo.models.UserCredentials;
 import com.techelevator.tenmo.services.AccountsService;
@@ -101,13 +102,29 @@ private static final String API_BASE_URL = "http://localhost:8080/";
         Scanner scanner = new Scanner(System.in);
 		User[] userList = userService.list(currentUser.getToken());
 		for(User u : userList) {
+			if (u.getId() != currentUser.getUser().getId())
 			System.out.println("user id: " + u.getId() + "    username: " + u.getUsername());
 		}
 		int userIdToTransferTo = -1;
 		System.out.println("Please choose a user id to transfer money to.");
-		while(userIdToTransferTo == -1) {
+		boolean isValidUserId = false;
+		while(!isValidUserId) {
 			try {
 				userIdToTransferTo = Integer.parseInt(scanner.nextLine());
+				for(User u : userList) {
+					if(u.getId() == userIdToTransferTo) {
+						if (u.getId() != currentUser.getUser().getId()) {
+							isValidUserId = true;
+						}else {
+							System.out.println("You can't choose your own ID. Please choose a valid user id to transfer money to.");
+						}
+					}
+				}
+				if(isValidUserId) {
+					break;
+				}
+				if(currentUser.getUser().getId() != userIdToTransferTo)
+				System.out.println("Not a valid user ID. Please choose a valid user id to transfer money to.");
 			} catch (Exception e) {
 				System.out.println("Cannot parse input to an integer. Please try again.");
 			}
@@ -122,10 +139,13 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 			}
 		}
 		String CSV = currentUser.getUser().getId() + "," + userIdToTransferTo + "," + moneyToTransfer;
-		transferService.doTransfer(currentUser.getToken(),CSV);
-		
+		Transfer tryTransfer = transferService.doTransfer(currentUser.getToken(),CSV);
+		if(tryTransfer == null) {
+			System.out.println("Transfer Failed.");
+		}else {
+			System.out.println("Transfer Succeeded");
+		}
 	}
-
 	private void requestBucks() {
 		// TODO Auto-generated method stub
 		

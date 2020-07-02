@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import com.techelevator.tenmo.model.Accounts;
+import com.techelevator.tenmo.model.Transfer;
 
 @Component
 public class AccountsSqlDAO implements AccountsDAO{
@@ -35,9 +36,20 @@ public class AccountsSqlDAO implements AccountsDAO{
     }
     
     @Override
-    public void updateBalance(Accounts account) {
-    	String sql = "UPDATE accounts SET balance = ? WHERE user_id = ?;";
-    	jdbcTemplate.update(sql,account.getBalance(),account.getUserId());
+    public void updateBalances(Transfer transfer) {
+    	String sql = "UPDATE accounts SET balance = balance + ? WHERE user_id = ?;";
+    	jdbcTemplate.update(sql,transfer.getAmount(),transfer.getAccount_to());
+    	jdbcTemplate.update(sql,transfer.getAmount().negate(),transfer.getAccount_from());
+    }
+    
+    @Override
+    public Accounts getAccountUsingUserId(int userId) {
+    	String sql = "select * from accounts where user_id = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql,userId);
+        Accounts account = null;
+        results.next();
+        account = mapRowToAccount(results);
+    	return account;
     }
     
     private Accounts mapRowToAccount(SqlRowSet results) {
