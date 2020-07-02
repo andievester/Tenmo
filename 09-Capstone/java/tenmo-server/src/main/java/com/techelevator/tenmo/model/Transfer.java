@@ -2,6 +2,8 @@ package com.techelevator.tenmo.model;
 
 import java.math.BigDecimal;
 
+import com.techelevator.tenmo.dao.UserDAO;
+
 public class Transfer {
 
 	private int transfer_id;

@@ -28,9 +28,9 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private static final String MAIN_MENU_OPTION_SEND_BUCKS = "Send TE bucks";
 	private static final String MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS = "View your past transfers";
 	private static final String MAIN_MENU_OPTION_REQUEST_BUCKS = "Request TE bucks";
-	private static final String MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS = "View your pending requests";
+	private static final String MAIN_MENU_OPTION_VIEW_TRANSFER_BY_ID = "View a specific transfer";
 	private static final String MAIN_MENU_OPTION_LOGIN = "Login as different user";
-	private static final String[] MAIN_MENU_OPTIONS = { MAIN_MENU_OPTION_VIEW_BALANCE, MAIN_MENU_OPTION_SEND_BUCKS, MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS, MAIN_MENU_OPTION_REQUEST_BUCKS, MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS, MAIN_MENU_OPTION_LOGIN, MENU_OPTION_EXIT };
+	private static final String[] MAIN_MENU_OPTIONS = { MAIN_MENU_OPTION_VIEW_BALANCE, MAIN_MENU_OPTION_SEND_BUCKS, MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS, MAIN_MENU_OPTION_REQUEST_BUCKS, MAIN_MENU_OPTION_VIEW_TRANSFER_BY_ID, MAIN_MENU_OPTION_LOGIN, MENU_OPTION_EXIT };
 	
     private AuthenticatedUser currentUser;
     private ConsoleService console;
@@ -68,8 +68,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				viewCurrentBalance();
 			} else if(MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS.equals(choice)) {
 				viewTransferHistory();
-			} else if(MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS.equals(choice)) {
-				viewPendingRequests();
+			} else if(MAIN_MENU_OPTION_VIEW_TRANSFER_BY_ID.equals(choice)) {
+				viewTransferById();
 			} else if(MAIN_MENU_OPTION_SEND_BUCKS.equals(choice)) {
 				sendBucks();
 			} else if(MAIN_MENU_OPTION_REQUEST_BUCKS.equals(choice)) {
@@ -89,13 +89,39 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
+		Transfer[] listOfMyTransfers = transferService.getTransfersByUserId(currentUser.getToken());
+		int userId = currentUser.getUser().getId();
 		
+		for(Transfer transfer : listOfMyTransfers) {
+				if (userId == transfer.getAccount_from()) {
+					String otherUsersName = userService.getNameByAccountId(currentUser.getToken(), transfer.getAccount_to());
+					System.out.println(transfer.getTransfer_id() + "\t" + "To: " + otherUsersName + "\t" + "AMOUNT: $" + transfer.getAmount());
+				}else {
+					String otherUsersName = userService.getNameByAccountId(currentUser.getToken(), transfer.getAccount_from());
+					System.out.println(transfer.getTransfer_id() + "\t" + "From: " + otherUsersName + "\t" + "AMOUNT: $" + transfer.getAmount());
+				}
+		}
 	}
 
-	private void viewPendingRequests() {
-		// TODO Auto-generated method stub
-		
+	private void viewTransferById() {
+        Scanner scanner = new Scanner(System.in);
+		System.out.println("Enter a transfer ID to view a transfer.");
+		int selectedTransferId = -1;
+		while(selectedTransferId == -1) {
+			try {
+				selectedTransferId = Integer.parseInt(scanner.nextLine());
+			} catch (Exception e) {
+				System.out.println("Cannot parse user input to an integer. Enter a transfer ID to view a transfer.");
+			}
+
+		}
+		Transfer transfer = transferService.getTransferByTransferId(currentUser.getToken(), selectedTransferId);
+		if(transfer != null) {
+			System.out.println("Id: " + transfer.getTransfer_id() + "\nFrom: " + userService.getNameByAccountId(currentUser.getToken(), transfer.getAccount_from()) + "\nTo: " + userService.getNameByAccountId(currentUser.getToken(), transfer.getAccount_to())  + "\nType: " +
+					transferService.transferTypeByTypeId(currentUser.getToken(), transfer.getTransfer_type())  + "\nStatus: " + transferService.transferStatusByStatusId(currentUser.getToken(), transfer.getTransfer_status_id())  + "\nAmount: " + transfer.getAmount());
+		}else {
+			System.out.println("There was no transfer found by that id.");
+		}		
 	}
 
 	private void sendBucks() {

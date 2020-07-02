@@ -78,6 +78,13 @@ public class UserSqlDAO implements UserDAO {
 
         return userCreated && accountCreated;
     }
+    
+    @Override
+    public String findNameByAccountId(int accountId) {
+    	String sql = "select username from users inner join accounts on users.user_id = accounts.user_id where account_id = ?;";
+    	String usernameFound = jdbcTemplate.queryForObject(sql,String.class,accountId);
+    	return usernameFound;
+    }
 
     private User mapRowToUser(SqlRowSet rs) {
         User user = new User();

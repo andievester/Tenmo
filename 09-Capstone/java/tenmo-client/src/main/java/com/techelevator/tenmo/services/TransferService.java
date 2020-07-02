@@ -2,6 +2,7 @@ package com.techelevator.tenmo.services;
 
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.util.List;
 import java.util.Random;
 
 import org.springframework.http.HttpEntity;
@@ -30,18 +31,43 @@ public class TransferService {
 		return headers;
 	}
 	
-	 public Transfer doTransfer(String token,String CSV) {
-		  
+	 public Transfer doTransfer(String token,String CSV) {	  
 		  HttpHeaders headers = authHeaders(token);
 		  headers.setContentType(MediaType.APPLICATION_JSON);
 		  Transfer transfer = makeTransfer(CSV);
 		  HttpEntity<Transfer> headerStuff = new HttpEntity<Transfer>(transfer,headers);
-
-		  transfer = restTemplate.postForObject(BASE_SERVICE_URL,headerStuff,Transfer.class);
-		  
+		  transfer = restTemplate.postForObject(BASE_SERVICE_URL,headerStuff,Transfer.class);		  
 		  return transfer;
 	  }
 
+	 public Transfer[] getTransfersByUserId(String authToken) {
+			HttpEntity<?> headerStuff = new HttpEntity<>(authHeaders(authToken));
+			ResponseEntity<Transfer[]> response = restTemplate.exchange(BASE_SERVICE_URL + "/mytransfers", HttpMethod.GET, headerStuff,Transfer[].class);
+			return response.getBody();
+	}
+	
+	 public Transfer getTransferByTransferId(String authToken, int transferId) {
+		 	HttpEntity<?> headerStuff = new HttpEntity<>(authHeaders(authToken));
+			ResponseEntity<Transfer> response = restTemplate.exchange(BASE_SERVICE_URL + "/" + transferId, HttpMethod.GET, headerStuff,Transfer.class);
+			return response.getBody();
+	 }
+	 
+	 public String transferTypeByTypeId(String authToken, int typeId) {	  
+		  HttpHeaders headers = authHeaders(authToken);
+		  headers.setContentType(MediaType.APPLICATION_JSON);
+		  HttpEntity<Integer> headerStuff = new HttpEntity<Integer>(typeId,headers);
+		  ResponseEntity<String> response = restTemplate.exchange(BASE_SERVICE_URL + "/gettype", HttpMethod.POST, headerStuff,String.class);		  
+		  return response.getBody();
+	  }
+	 
+	 public String transferStatusByStatusId(String authToken, int statusId) {	  
+		  HttpHeaders headers = authHeaders(authToken);
+		  headers.setContentType(MediaType.APPLICATION_JSON);
+		  HttpEntity<Integer> headerStuff = new HttpEntity<Integer>(statusId,headers);
+		  ResponseEntity<String> response = restTemplate.exchange(BASE_SERVICE_URL + "/getstatus", HttpMethod.POST, headerStuff,String.class);		  
+		  return response.getBody();
+	  }
+	 
 	 private Transfer makeTransfer(String CSV) {
 		    String[] parsed = CSV.split(",");   
 		    return new Transfer(parsed[0],parsed[1],parsed[2]);

@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.controller;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -52,4 +53,30 @@ public class TransferController {
 		}
         return updatedTransfer;
     }
+	
+	@RequestMapping(path = "/{id}", method = RequestMethod.GET)
+	public Transfer getTransferFromTransferId(@PathVariable int id){
+		Transfer transfer = null;
+		List<Integer> transferIds = transferDAO.getAllTransferIds();
+		if(transferIds.contains(id)) {
+			transfer = transferDAO.getTransferByTransferId(id);
+		}		
+		return transfer;
+	}
+	
+	@RequestMapping(path = "/mytransfers", method = RequestMethod.GET)
+	public List<Transfer> getTransfersForUser(Principal principal){
+		List<Transfer> listOfTransfersInvolvingUser = transferDAO.getTransfersByUserId(userDAO.findIdByUsername(principal.getName()));
+		return listOfTransfersInvolvingUser;
+	}
+	
+	@RequestMapping(path = "/gettype", method = RequestMethod.POST)
+	public String getTypeFromTypeId(@Valid @RequestBody int typeId){
+		return transferDAO.getTypeByTypeId(typeId);
+	}
+	
+	@RequestMapping(path = "/getstatus", method = RequestMethod.POST)
+	public String getStatusFromStatusId(@Valid @RequestBody int statusId){
+		return transferDAO.getStatusByStatusId(statusId);
+	}
 }
