@@ -122,7 +122,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 			}
 		}
 		String CSV = currentUser.getUser().getId() + "," + userIdToTransferTo + "," + moneyToTransfer;
-		transferService.doTransfer(CSV);
+		transferService.doTransfer(currentUser.getToken(),CSV);
 		
 	}
 

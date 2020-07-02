@@ -21,7 +21,7 @@ public class TransferService {
 	private RestTemplate restTemplate = new RestTemplate();
 	
 	public TransferService(String baseUrl) {
-		this.BASE_SERVICE_URL = baseUrl + "transfer/";
+		this.BASE_SERVICE_URL = baseUrl + "transfer";
 	}
 
 	private HttpHeaders authHeaders(String authToken) {
@@ -30,18 +30,15 @@ public class TransferService {
 		return headers;
 	}
 	
-	 public Transfer doTransfer(String CSV) {
+	 public Transfer doTransfer(String token,String CSV) {
 		  
-		  HttpHeaders headers = new HttpHeaders();
+		  HttpHeaders headers = authHeaders(token);
 		  headers.setContentType(MediaType.APPLICATION_JSON);
 		  Transfer transfer = makeTransfer(CSV);
-		  HttpEntity<Transfer> entity = new HttpEntity<Transfer>(headers);
+		  HttpEntity<Transfer> headerStuff = new HttpEntity<Transfer>(transfer,headers);
 
-		  try {
-		  transfer = restTemplate.postForObject(BASE_SERVICE_URL,entity,Transfer.class);
-		  }
-		  catch (RestClientResponseException e) {
-		  }	  
+		  transfer = restTemplate.postForObject(BASE_SERVICE_URL,headerStuff,Transfer.class);
+		  
 		  return transfer;
 	  }
 

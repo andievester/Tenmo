@@ -45,6 +45,9 @@ public class TransferController {
 		transfer.setTransfer_status_id(2);
 		transfer.setTransfer_type(2);
 		Transfer updatedTransfer = transferDAO.insertTransfer(transfer);
+		//if i was able to do the transfer:
+		//do a method to add money to account
+		//do a method to subtract money from account
         return updatedTransfer;
     }
 }

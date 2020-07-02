@@ -53,4 +53,8 @@ public class Transfer {
 		this.account_to = Integer.parseInt(accountTo);
 		this.amount = BigDecimal.valueOf(Double.parseDouble(amount));
 	}
+	
+	public Transfer() {
+		
+	}
 }
