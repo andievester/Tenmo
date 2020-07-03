@@ -1,6 +1,7 @@
 package com.techelevator.tenmo;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import org.springframework.web.client.RestTemplate;
@@ -12,6 +13,7 @@ import com.techelevator.tenmo.models.UserCredentials;
 import com.techelevator.tenmo.services.AccountsService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
+import com.techelevator.tenmo.services.MethodsService;
 import com.techelevator.tenmo.services.TransferService;
 import com.techelevator.tenmo.services.UserService;
 import com.techelevator.view.ConsoleService;
@@ -38,6 +40,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private AccountsService accountsService;
     private UserService userService;
     private TransferService transferService;
+    private MethodsService methodsService;
 
     public static void main(String[] args) {
     	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL), new AccountsService(API_BASE_URL), new UserService(API_BASE_URL), new TransferService(API_BASE_URL));
@@ -50,6 +53,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		this.accountsService = accountsService;
 		this.userService = userService;
 		this.transferService = transferService;
+		this.methodsService = new MethodsService(userService, console, transferService);
 	}
 
 	public void run() {
@@ -91,83 +95,24 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private void viewTransferHistory() {
 		Transfer[] listOfMyTransfers = transferService.getTransfersByUserId(currentUser.getToken());
 		int userId = currentUser.getUser().getId();
-		
-		for(Transfer transfer : listOfMyTransfers) {
-				if (userId == transfer.getAccount_from()) {
-					String otherUsersName = userService.getNameByAccountId(currentUser.getToken(), transfer.getAccount_to());
-					System.out.println(transfer.getTransfer_id() + "\t" + "To: " + otherUsersName + "\t" + "AMOUNT: $" + transfer.getAmount());
-				}else {
-					String otherUsersName = userService.getNameByAccountId(currentUser.getToken(), transfer.getAccount_from());
-					System.out.println(transfer.getTransfer_id() + "\t" + "From: " + otherUsersName + "\t" + "AMOUNT: $" + transfer.getAmount());
-				}
-		}
+		methodsService.displayListOfTransfers(userId, listOfMyTransfers, currentUser.getToken());
 	}
 
 	private void viewTransferById() {
-        Scanner scanner = new Scanner(System.in);
-		System.out.println("Enter a transfer ID to view a transfer.");
-		int selectedTransferId = -1;
-		while(selectedTransferId == -1) {
-			try {
-				selectedTransferId = Integer.parseInt(scanner.nextLine());
-			} catch (Exception e) {
-				System.out.println("Cannot parse user input to an integer. Enter a transfer ID to view a transfer.");
-			}
-
-		}
+		int selectedTransferId = methodsService.getSelectedTransferId();
 		Transfer transfer = transferService.getTransferByTransferId(currentUser.getToken(), selectedTransferId);
-		if(transfer != null) {
-			System.out.println("Id: " + transfer.getTransfer_id() + "\nFrom: " + userService.getNameByAccountId(currentUser.getToken(), transfer.getAccount_from()) + "\nTo: " + userService.getNameByAccountId(currentUser.getToken(), transfer.getAccount_to())  + "\nType: " +
-					transferService.transferTypeByTypeId(currentUser.getToken(), transfer.getTransfer_type())  + "\nStatus: " + transferService.transferStatusByStatusId(currentUser.getToken(), transfer.getTransfer_status_id())  + "\nAmount: " + transfer.getAmount());
-		}else {
-			System.out.println("There was no transfer found by that id.");
-		}		
+		methodsService.displayTransfer(currentUser.getToken(), transfer);
 	}
 
 	private void sendBucks() {
-        Scanner scanner = new Scanner(System.in);
-		User[] userList = userService.list(currentUser.getToken());
-		for(User u : userList) {
-			if (u.getId() != currentUser.getUser().getId())
-			System.out.println("user id: " + u.getId() + "    username: " + u.getUsername());
-		}
-		int userIdToTransferTo = -1;
-		System.out.println("Please choose a user id to transfer money to.");
-		boolean isValidUserId = false;
-		while(!isValidUserId) {
-			try {
-				userIdToTransferTo = Integer.parseInt(scanner.nextLine());
-				for(User u : userList) {
-					if(u.getId() == userIdToTransferTo) {
-						if (u.getId() != currentUser.getUser().getId()) {
-							isValidUserId = true;
-						}else {
-							System.out.println("You can't choose your own ID. Please choose a valid user id to transfer money to.");
-						}
-					}
-				}
-				if(isValidUserId) {
-					break;
-				}
-				if(currentUser.getUser().getId() != userIdToTransferTo)
-				System.out.println("Not a valid user ID. Please choose a valid user id to transfer money to.");
-			} catch (Exception e) {
-				System.out.println("Cannot parse input to an integer. Please try again.");
-			}
-		}
-		BigDecimal moneyToTransfer = BigDecimal.ZERO;
-		System.out.println("How much money do you want to transfer?");
-		while(moneyToTransfer == BigDecimal.ZERO) {
-			try {
-				moneyToTransfer = BigDecimal.valueOf(Double.parseDouble(scanner.nextLine()));
-			} catch (Exception e) {
-				System.out.println("Cannot parse input to a BigDecimal. Please try again.");
-			}
-		}
+		User[] userArray = userService.list(currentUser.getToken());
+		User[] userArrayFinal = methodsService.removeCurrentUserFromArray(userArray,currentUser.getUser().getId());
+		int userIdToTransferTo = ((User)console.getChoiceFromOptions(userArrayFinal)).getId();
+		BigDecimal moneyToTransfer = methodsService.getMoneyToTransfer();	
 		String CSV = currentUser.getUser().getId() + "," + userIdToTransferTo + "," + moneyToTransfer;
 		Transfer tryTransfer = transferService.doTransfer(currentUser.getToken(),CSV);
 		if(tryTransfer == null) {
-			System.out.println("Transfer Failed.");
+			System.out.println("Transfer Failed.  Not Enough Money.");
 		}else {
 			System.out.println("Transfer Succeeded");
 		}
