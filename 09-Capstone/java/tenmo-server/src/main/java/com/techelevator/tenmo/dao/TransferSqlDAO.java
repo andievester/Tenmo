@@ -2,13 +2,10 @@ package com.techelevator.tenmo.dao;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-
 import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.User;
 
 @Component
 public class TransferSqlDAO implements TransferDAO{
@@ -22,7 +19,7 @@ public class TransferSqlDAO implements TransferDAO{
 	@Override
 	public Transfer insertTransfer(Transfer transfer) {
 		String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id,account_from,account_to,amount) VALUES (?,?,?,?,?);";
-		jdbcTemplate.update(sql, transfer.getTransfer_type(), transfer.getTransfer_status_id(),transfer.getAccount_from(),transfer.getAccount_to(),transfer.getAmount());
+		jdbcTemplate.update(sql, transfer.getTransferType(), transfer.getTransferStatusId(),transfer.getAccountFrom(),transfer.getAccountTo(),transfer.getAmount());
 		return transfer;
 	}
 	
@@ -78,11 +75,11 @@ public class TransferSqlDAO implements TransferDAO{
 	
 	private Transfer mapRowToTransfer(SqlRowSet rs) {
         Transfer transfer = new Transfer();
-        transfer.setAccount_from(rs.getInt("account_from"));
-        transfer.setAccount_to(rs.getInt("account_to"));
-        transfer.setTransfer_id(rs.getInt("transfer_id"));
-        transfer.setTransfer_status_id(rs.getInt("transfer_status_id"));
-        transfer.setTransfer_type(rs.getInt("transfer_type_id"));
+        transfer.setAccountFrom(rs.getInt("account_from"));
+        transfer.setAccountTo(rs.getInt("account_to"));
+        transfer.setTransferId(rs.getInt("transfer_id"));
+        transfer.setTransferStatusId(rs.getInt("transfer_status_id"));
+        transfer.setTransferType(rs.getInt("transfer_type_id"));
         transfer.setAmount(rs.getBigDecimal("amount"));
         return transfer;
     }

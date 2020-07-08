@@ -38,8 +38,8 @@ public class AccountsSqlDAO implements AccountsDAO{
     @Override
     public void updateBalances(Transfer transfer) {
     	String sql = "UPDATE accounts SET balance = balance + ? WHERE user_id = ?;";
-    	jdbcTemplate.update(sql,transfer.getAmount(),transfer.getAccount_to());
-    	jdbcTemplate.update(sql,transfer.getAmount().negate(),transfer.getAccount_from());
+    	jdbcTemplate.update(sql,transfer.getAmount(),transfer.getAccountTo());
+    	jdbcTemplate.update(sql,transfer.getAmount().negate(),transfer.getAccountFrom());
     }
     
     @Override

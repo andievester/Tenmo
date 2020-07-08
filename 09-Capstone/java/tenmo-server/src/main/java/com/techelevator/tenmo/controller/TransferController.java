@@ -1,11 +1,9 @@
 package com.techelevator.tenmo.controller;
 
-import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +17,6 @@ import com.techelevator.tenmo.dao.UserDAO;
 import com.techelevator.tenmo.dao.UserSqlDAO;
 import com.techelevator.tenmo.model.Accounts;
 import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.User;
 
 @RequestMapping("/transfer")
 @PreAuthorize("isAuthenticated()")
@@ -28,7 +25,6 @@ public class TransferController {
 
 	private AccountsDAO accountDAO;
 	private UserDAO userDAO;
-	private JdbcTemplate jdbcTemplate;
 	private TransferDAO transferDAO;
 	
 	public TransferController(AccountsDAO accountDAO, UserSqlDAO userSqlDAO, TransferDAO transferDAO) {
@@ -40,9 +36,9 @@ public class TransferController {
 	@ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(path = "", method = RequestMethod.POST)
     public Transfer sendTransfer(@Valid @RequestBody Transfer transfer){
-		transfer.setTransfer_status_id(2);
-		transfer.setTransfer_type(2);
-		Accounts account = accountDAO.getAccountUsingUserId(transfer.getAccount_from());
+		transfer.setTransferStatusId(2);
+		transfer.setTransferType(2);
+		Accounts account = accountDAO.getAccountUsingUserId(transfer.getAccountFrom());
 		int compare = account.getBalance().compareTo(transfer.getAmount());
 		Transfer updatedTransfer = null;
 		if(compare == 0 || compare == 1) {

@@ -3,9 +3,6 @@ package com.techelevator.tenmo.services;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.web.client.RestTemplate;
-
 import com.techelevator.tenmo.models.Transfer;
 import com.techelevator.tenmo.models.User;
 import com.techelevator.view.ConsoleService;
@@ -23,21 +20,24 @@ public class MethodsService {
 	}
 	
 	public int getSelectedTransferId() {
-		int selectedTransferId = -1;
-		while(selectedTransferId == -1) {
+		boolean isIdPositive = false;
+		int selectedTransferId = 0;
+		while(!isIdPositive) {
 			try {
 				selectedTransferId = console.getUserInputInteger("Enter a transfer ID to view a transfer.");
 			} catch (Exception e) {
 				System.out.println("Cannot parse user input to an integer.");
 			}
+			if(selectedTransferId > 0)
+			isIdPositive = true;
 		}
 		return selectedTransferId;
 	}
 	
 	public void displayTransfer(String authToken, Transfer transfer) {
 		if(transfer != null) {
-			System.out.println("Id: " + transfer.getTransfer_id() + "\nFrom: " + userService.getNameByAccountId(authToken, transfer.getAccount_from()) + "\nTo: " + userService.getNameByAccountId(authToken, transfer.getAccount_to())  + "\nType: " +
-					transferService.transferTypeByTypeId(authToken, transfer.getTransfer_type())  + "\nStatus: " + transferService.transferStatusByStatusId(authToken, transfer.getTransfer_status_id())  + "\nAmount: " + transfer.getAmount());
+			System.out.println("Id: " + transfer.getTransferId() + "\nFrom: " + userService.getNameByAccountId(authToken, transfer.getAccountFrom()) + "\nTo: " + userService.getNameByAccountId(authToken, transfer.getAccountTo())  + "\nType: " +
+					transferService.transferTypeByTypeId(authToken, transfer.getTransferType())  + "\nStatus: " + transferService.transferStatusByStatusId(authToken, transfer.getTransferStatusId())  + "\nAmount: " + transfer.getAmount());
 		}else {
 			System.out.println("There was no transfer found by that id.");
 		}
@@ -45,12 +45,12 @@ public class MethodsService {
 	
 	public void displayListOfTransfers(int userId, Transfer[] listOfMyTransfers, String authToken) {
 		for(Transfer transfer : listOfMyTransfers) {
-			if (userId == transfer.getAccount_from()) {
-				String otherUsersName = userService.getNameByAccountId(authToken, transfer.getAccount_to());
-				System.out.println(transfer.getTransfer_id() + "\t" + "To: " + otherUsersName + "\t" + "AMOUNT: $" + transfer.getAmount());
+			if (userId == transfer.getAccountFrom()) {
+				String otherUsersName = userService.getNameByAccountId(authToken, transfer.getAccountTo());
+				System.out.println(transfer.getTransferId() + "\t" + "To: " + otherUsersName + "\t" + "AMOUNT: $" + transfer.getAmount());
 			}else {
-				String otherUsersName = userService.getNameByAccountId(authToken, transfer.getAccount_from());
-				System.out.println(transfer.getTransfer_id() + "\t" + "From: " + otherUsersName + "\t" + "AMOUNT: $" + transfer.getAmount());
+				String otherUsersName = userService.getNameByAccountId(authToken, transfer.getAccountFrom());
+				System.out.println(transfer.getTransferId() + "\t" + "From: " + otherUsersName + "\t" + "AMOUNT: $" + transfer.getAmount());
 			}
 		}
 	}

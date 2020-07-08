@@ -2,46 +2,44 @@ package com.techelevator.tenmo.model;
 
 import java.math.BigDecimal;
 
-import com.techelevator.tenmo.dao.UserDAO;
-
 public class Transfer {
 
-	private int transfer_id;
-	private int transfer_type;
-	private int transfer_status_id;
-	private int account_from;
-	private int account_to;
+	private int transferId;
+	private int transferType;
+	private int transferStatusId;
+	private int accountFrom;
+	private int accountTo;
 	private BigDecimal amount;
 	
-	public int getTransfer_id() {
-		return transfer_id;
+	public int getTransferId() {
+		return transferId;
 	}
-	public void setTransfer_id(int transfer_id) {
-		this.transfer_id = transfer_id;
+	public void setTransferId(int transferId) {
+		this.transferId = transferId;
 	}
-	public int getTransfer_type() {
-		return transfer_type;
+	public int getTransferType() {
+		return transferType;
 	}
-	public void setTransfer_type(int transfer_type) {
-		this.transfer_type = transfer_type;
+	public void setTransferType(int transferType) {
+		this.transferType = transferType;
 	}
-	public int getTransfer_status_id() {
-		return transfer_status_id;
+	public int getTransferStatusId() {
+		return transferStatusId;
 	}
-	public void setTransfer_status_id(int transfer_status_id) {
-		this.transfer_status_id = transfer_status_id;
+	public void setTransferStatusId(int transferStatusId) {
+		this.transferStatusId = transferStatusId;
 	}
-	public int getAccount_from() {
-		return account_from;
+	public int getAccountFrom() {
+		return accountFrom;
 	}
-	public void setAccount_from(int account_from) {
-		this.account_from = account_from;
+	public void setAccountFrom(int accountFrom) {
+		this.accountFrom = accountFrom;
 	}
-	public int getAccount_to() {
-		return account_to;
+	public int getAccountTo() {
+		return accountTo;
 	}
-	public void setAccount_to(int account_to) {
-		this.account_to = account_to;
+	public void setAccountTo(int accountTo) {
+		this.accountTo = accountTo;
 	}
 	public BigDecimal getAmount() {
 		return amount;
@@ -54,12 +52,12 @@ public class Transfer {
 		
 	}
 	
-	public Transfer(int transfer_id, int transfer_type, int transfer_status_id, int account_from, int account_to, BigDecimal amount) {
-		this.account_from = account_from;
-		this.account_to = account_to;
-		this.transfer_id = transfer_id;
-		this.transfer_type = transfer_type;
-		this.transfer_status_id = transfer_status_id;
+	public Transfer(int transferId, int transferType, int transferStatusId, int accountFrom, int accountTo, BigDecimal amount) {
+		this.accountFrom = accountFrom;
+		this.accountTo = accountTo;
+		this.transferId = transferId;
+		this.transferType = transferType;
+		this.transferStatusId = transferStatusId;
 		this.amount = amount;
 		
 	}

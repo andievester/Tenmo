@@ -5,42 +5,42 @@ import java.security.Principal;
 
 public class Transfer {
 
-	private int transfer_id;
-	private int transfer_type;
-	private int transfer_status_id;
-	private int account_from;
-	private int account_to;
+	private int transferId;
+	private int transferType;
+	private int transferStatusId;
+	private int accountFrom;
+	private int accountTo;
 	private BigDecimal amount;
 	
-	public int getTransfer_id() {
-		return transfer_id;
+	public int getTransferId() {
+		return transferId;
 	}
-	public void setTransfer_id(int transfer_id) {
-		this.transfer_id = transfer_id;
+	public void setTransferId(int transferId) {
+		this.transferId = transferId;
 	}
-	public int getTransfer_type() {
-		return transfer_type;
+	public int getTransferType() {
+		return transferType;
 	}
-	public void setTransfer_type(int transfer_type) {
-		this.transfer_type = transfer_type;
+	public void setTransferType(int transferType) {
+		this.transferType = transferType;
 	}
-	public int getTransfer_status_id() {
-		return transfer_status_id;
+	public int getTransferStatusId() {
+		return transferStatusId;
 	}
-	public void setTransfer_status_id(int transfer_status_id) {
-		this.transfer_status_id = transfer_status_id;
+	public void setTransferStatusId(int transferStatusId) {
+		this.transferStatusId = transferStatusId;
 	}
-	public int getAccount_from() {
-		return account_from;
+	public int getAccountFrom() {
+		return accountFrom;
 	}
-	public void setAccount_from(int account_from) {
-		this.account_from = account_from;
+	public void setAccountFrom(int accountFrom) {
+		this.accountFrom = accountFrom;
 	}
-	public int getAccount_to() {
-		return account_to;
+	public int getAccountTo() {
+		return accountTo;
 	}
-	public void setAccount_to(int account_to) {
-		this.account_to = account_to;
+	public void setAccount_to(int accountTo) {
+		this.accountTo = accountTo;
 	}
 	public BigDecimal getAmount() {
 		return amount;
@@ -50,8 +50,8 @@ public class Transfer {
 	}
 
 	public Transfer(String accountFrom, String accountTo, String amount) {
-		this.account_from = Integer.parseInt(accountFrom);
-		this.account_to = Integer.parseInt(accountTo);
+		this.accountFrom = Integer.parseInt(accountFrom);
+		this.accountTo = Integer.parseInt(accountTo);
 		this.amount = BigDecimal.valueOf(Double.parseDouble(amount));
 	}
 	
